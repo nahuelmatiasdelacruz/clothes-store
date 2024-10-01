@@ -1,6 +1,6 @@
 # Clothes Store
 
-Tienda de ropa realizada en React Native. Para consolidar conocimientos en React Native. Conexión a APIs (En este caso una API en NestJS)
+Tienda de ropa realizada en React Native. Para consolidar conocimientos. Conexión a APIs (En este caso una API en NestJS)
 
 ## Tech Stack
 
@@ -9,6 +9,7 @@ Tienda de ropa realizada en React Native. Para consolidar conocimientos en React
 **Servidor:** NestJS
 
 **DB:** PostgreSQL
+
 ## Autor
 
 - [@nahuelmatiasdelacruz](https://www.github.com/nahuelmatiasdelacruz)
