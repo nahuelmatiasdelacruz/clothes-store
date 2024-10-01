@@ -1,9 +1,14 @@
+import { Layout, Spinner } from "@ui-kitten/components"
 import { View } from "react-native"
 
 export const LoadingScreen = () => {
   return (
-    <View>
-      
-    </View>
+    <Layout style={{
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center'
+    }}>
+      <Spinner status='primary' size='large'/>
+    </Layout>
   )
 }
