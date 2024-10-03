@@ -23,7 +23,7 @@ export const CustomIcon = ({name, color, white = false}:CustomIconProps) => {
 
 const styles = StyleSheet.create({
   icon: {
-    width: 32,
-    height: 32,
+    width: 30,
+    height: 30,
   }
 });
