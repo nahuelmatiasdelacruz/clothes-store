@@ -1,53 +1,47 @@
-import {Button,ButtonGroup,Input,Layout,Text,useTheme,} from '@ui-kitten/components';
-import {useQuery} from '@tanstack/react-query';
-import {StackScreenProps} from '@react-navigation/stack';
-import {MainLayout} from '../../layouts/MainLayout';
-import {RootStackParams} from '../../navigation/StackNavigator';
-import {getProductById} from '../../../actions/products/getProductById';
-import {useRef} from 'react';
-import {ScrollView} from 'react-native-gesture-handler';
-import {FlatList} from 'react-native';
-import {FadeInImage} from '../../components/ui/FadeInImage';
-import {Gender, Size} from '../../../domain/entities/product.entity';
-import {CustomIcon} from '../../components/ui/CustomIcon';
-import {Formik} from 'formik';
-
-const sizes: Size[] = [Size.Xs, Size.S, Size.M, Size.L, Size.Xl, Size.Xxl];
-
-const genders: Gender[] = [Gender.Kid, Gender.Men, Gender.Women, Gender.Unisex];
+import { useRef} from 'react';
+import { ScrollView} from 'react-native-gesture-handler';
+import { Button,ButtonGroup,Input,Layout ,useTheme,} from '@ui-kitten/components';
+import { useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
+import { StackScreenProps} from '@react-navigation/stack';
+import { updateCreateProduct, getProductById } from '../../../actions';
+import { MainLayout} from '../../layouts/MainLayout';
+import { RootStackParams} from '../../navigation/StackNavigator';
+import { CustomIcon} from '../../components/ui/CustomIcon';
+import { Product } from '../../../domain/entities/product.entity';
+import { Formik} from 'formik';
+import { ProductImages } from '../../components/products/ProductImages';
+import { genders, sizes } from '../../../config/constants/product.constants';
 
 interface ProductScreenProps extends StackScreenProps<RootStackParams, 'ProductScreen'> {}
 
 export const ProductScreen = ({route}: ProductScreenProps) => {
   const productIdRef = useRef(route.params.productId);
   const theme = useTheme();
-  const {isLoading, data: product} = useQuery({
+  const queryClient = useQueryClient();
+  
+  const {data: product} = useQuery({
     queryKey: ['product', productIdRef.current],
     queryFn: () => getProductById(productIdRef.current),
   });
-  if (!product) {
-    return null;
-  }
+  
+  const mutation = useMutation({
+    mutationFn: (data: Product) => updateCreateProduct({...data, id: productIdRef.current}),
+    onSuccess(data: Product) {
+      productIdRef.current = data.id;
+      queryClient.invalidateQueries({queryKey: ['products','infinite']});
+      queryClient.invalidateQueries({queryKey: ['product',data.id]});
+    }
+  });
+  if (!product) return null;
   return (
-    <Formik initialValues={product} onSubmit={values => {}}>
+    <Formik initialValues={product} onSubmit={mutation.mutate}>
       {({ handleChange, handleSubmit, values, errors, setFieldValue }) => (
         <MainLayout
           title={values.title}
           subtitle={`Precio: $${values.price} USD`}>
           <ScrollView style={{flex: 1}}>
-            <Layout>
-              <FlatList
-                data={values.images}
-                horizontal
-                keyExtractor={item => item}
-                showsHorizontalScrollIndicator={false}
-                renderItem={({item}) => (
-                  <FadeInImage
-                    uri={item}
-                    style={{width: 300, height: 300, marginHorizontal: 7}}
-                  />
-                )}
-              />
+            <Layout style={{marginVertical: 10, justifyContent: 'center', alignItems: 'center'}}>
+              <ProductImages images={values.images}/>
               <Layout style={{marginHorizontal: 10}}>
                 <Input
                   label="Título"
@@ -80,12 +74,14 @@ export const ProductScreen = ({route}: ProductScreenProps) => {
                   label="Precio"
                   value={values.price.toString()}
                   onChangeText={handleChange('price')}
+                  keyboardType='number-pad'
                 />
                 <Input
                   style={{flex: 1}}
                   label="Inventario"
                   value={values.stock.toString()}
                   onChangeText={handleChange('stock')}
+                  keyboardType='number-pad'
                 />
               </Layout>
               <ButtonGroup
@@ -129,8 +125,9 @@ export const ProductScreen = ({route}: ProductScreenProps) => {
                 ))}
               </ButtonGroup>
               <Button
-                onPress={() => {}}
+                onPress={() => handleSubmit()}
                 style={{margin: 15}}
+                disabled={mutation.isPending}
                 accessoryLeft={<CustomIcon name="save-outline" white />}>
                 Guardar
               </Button>

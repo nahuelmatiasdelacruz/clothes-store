@@ -26,5 +26,4 @@ export class StorageAdapter {
       throw new Error(`Something get wrong: ${e}`)
     }
   }
-
 };
