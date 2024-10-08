@@ -22,7 +22,7 @@ export const useAuthStore = create<AuthState>()((set,get)=>({
 
     const response = await authLogin(email,password);
     if(!response) {
-      set({status: 'authenticated', token: undefined, user: undefined})
+      set({status: 'unauthenticated', token: undefined, user: undefined})
       return false;
     }
     await StorageAdapter.setItem('token',response.token);

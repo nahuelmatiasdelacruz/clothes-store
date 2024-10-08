@@ -20,7 +20,7 @@ export const MainLayout = ({ title, subtitle, rightAction, rightActionIcon, chil
   )
   const RenderRightAction = () => {
     if(rightAction === undefined || rightActionIcon === undefined) return null;
-    <TopNavigationAction onPress={rightAction} icon={<CustomIcon name={rightActionIcon}/>}/>
+    return <TopNavigationAction onPress={rightAction} icon={<CustomIcon name={rightActionIcon}/>}/>
   }
   return (
     <Layout style={{paddingTop: top}}>
